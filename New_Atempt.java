@@ -11,8 +11,10 @@ public class New_Atempt {
 
     public static void main(String[] args) {
         _tuppleList.add(new Tuple(1,20));
-        printATupleList(_tuppleList);
+        //printATupleList(_tuppleList);
+        System.out.println(_tuppleList.get(0).toString());
         
+
        // System.out.println(_CommandString.str);
         //System.out.println(pop(_CommandString.str));
         //delete(_CommandString);
@@ -30,19 +32,41 @@ public class New_Atempt {
 
 
      static int nextBreak(NewTypeString String_W_lengthOnFront){
+//TODO: We runn our base case check here. if no more breaks left in the command stringjust return the value.
+        
+        
+        
         int length = pop(String_W_lengthOnFront.str);
         String_W_lengthOnFront.delete();
         int breakValue = pop(String_W_lengthOnFront.str);
         String_W_lengthOnFront.delete();
 
+        if(String_W_lengthOnFront.str.length() < 2 ){
+            System.out.println("We hit this point!");
+            return 0;
+        }
+
         _tuppleList.add(new Tuple(1, breakValue));
         _tuppleList.add(new Tuple(breakValue+1, length));
+//TODO: This needs to remove tuple we are working on not the first tuple
         _tuppleList.remove(0);
 
 
         PrintAll(length, breakValue, String_W_lengthOnFront);
         printATupleList(_tuppleList);
 
+//TODO: Here we should find our new length and which tuple set we are using. 
+        //( ) Find the tuple we should use
+            //This is the break we are searching for
+            int ValueToSearchFor = pop(String_W_lengthOnFront.str);
+            for(int i = 0; i < _tuppleList.size(); i++){
+                if(_tuppleList.get(i)._Left_Value <= ValueToSearchFor && _tuppleList.get(i)._Right_Value > ValueToSearchFor){
+            //( ) Add length to command string here
+                }
+            }
+        //( ) Find the length of said tuple
+        //( ) Add the length onto the command string
+        nextBreak(String_W_lengthOnFront);
 
 
         int Value_Of_This_CommandString = 0;
@@ -52,7 +76,7 @@ public class New_Atempt {
      static public void PrintAll(int length, int breakValue, NewTypeString leftoverString){
         System.out.println("The length of the current string is: "+ length);
         System.out.println("The next break is at: "+ breakValue);
-        System.out.println("The rest of the string is: "+ leftoverString.str);
+        System.out.println("The rest of the command string is: "+ leftoverString.str);
      }
 
 
@@ -63,14 +87,15 @@ public class New_Atempt {
 //final Form
      public static void printATupleList(ArrayList<Tuple> tupleLisToPrint){
         for(int i = 0; i < _tuppleList.size(); i++){
-            printATuple(tupleLisToPrint.get(i));
+            System.out.println(tupleLisToPrint.get(i).toString());
+            //printATuple(tupleLisToPrint.get(i));
 
         }
      }
 //Final Form
      public static void printATuple(Tuple tupleToprint){
-            System.out.println(tupleToprint._Left_Value);
-            System.out.println(tupleToprint._Right_Value);
+            System.out.println(tupleToprint._Left_Value +"_"+tupleToprint._Right_Value);
+            System.out.println("Length of the tuple is: "+ (tupleToprint._Right_Value-tupleToprint._Left_Value+1));
         
      }
 
@@ -141,6 +166,16 @@ class Tuple {
    public void set_Right_Value(int _Right_Value) {
        this._Right_Value = _Right_Value;
    }
+
+   public String toString(){
+    String ReturnedString;
+    ReturnedString = "_"+ this._Left_Value +"_"+ this._Right_Value;
+    return ReturnedString;
+   }
+
+
+
+
 }
 
 class NewTypeString {
