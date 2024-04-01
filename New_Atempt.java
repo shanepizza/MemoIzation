@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class New_Atempt {
-     static NewTypeString _CommandString = new NewTypeString("_20_8_2_10");
+     static NewTypeString _CommandString = new NewTypeString("_20_8_2_10_5_15");
      static String delimiter = "_";
      static ArrayList<Tuple> _tuppleList = new ArrayList<Tuple>();
      static HashMap _Ordered_Commands = new HashMap<>();
@@ -45,11 +45,21 @@ public class New_Atempt {
             System.out.println("We hit this point!");
             return 0;
         }
-
-        _tuppleList.add(new Tuple(1, breakValue));
-        _tuppleList.add(new Tuple(breakValue+1, length));
 //TODO: This needs to remove tuple we are working on not the first tuple
-        _tuppleList.remove(0);
+        for(int i = 0; i < _tuppleList.size(); i++){
+            if (_tuppleList.get(i)._Left_Value < breakValue && breakValue < _tuppleList.get(i)._Right_Value){
+                _tuppleList.add(new Tuple(_tuppleList.get(i)._Left_Value, breakValue));
+                _tuppleList.add(new Tuple(breakValue+1, _tuppleList.get(i)._Right_Value));
+                _tuppleList.remove(i);
+                
+            
+            }
+        }
+       
+
+        
+        
+        
 
 
         PrintAll(length, breakValue, String_W_lengthOnFront);
@@ -59,13 +69,25 @@ public class New_Atempt {
         //( ) Find the tuple we should use
             //This is the break we are searching for
             int ValueToSearchFor = pop(String_W_lengthOnFront.str);
+            int lengthOfTuple = -1;
             for(int i = 0; i < _tuppleList.size(); i++){
                 if(_tuppleList.get(i)._Left_Value <= ValueToSearchFor && _tuppleList.get(i)._Right_Value > ValueToSearchFor){
+                    //We found the correct tuple now. 
+                    lengthOfTuple = _tuppleList.get(i)._Right_Value-_tuppleList.get(i)._Left_Value+1;
+                    System.out.println("Length of the tuple we are using: "+ lengthOfTuple);
+                    //We have the length here
             //( ) Add length to command string here
+                    _CommandString.add(lengthOfTuple);
+                    System.out.println("This is the new command string: "+ _CommandString.str);
+                    
+                    
                 }
             }
-        //( ) Find the length of said tuple
-        //( ) Add the length onto the command string
+            if (lengthOfTuple == -1){
+                System.out.println("error. Next command is too large for the original string.");
+
+            }
+        System.out.println("This is the Command String we are about to run: "+ _CommandString.str);
         nextBreak(String_W_lengthOnFront);
 
 
@@ -108,7 +130,13 @@ public class New_Atempt {
 //Final Form
      static int pop(String String_with_Values){
         locationOf2ndSpace(String_with_Values, delimiter);
-        return Integer.valueOf(String_with_Values.substring(1, locationOf2ndSpace(String_with_Values, delimiter)[1]));
+        try {
+            return Integer.valueOf(String_with_Values.substring(1, locationOf2ndSpace(String_with_Values, delimiter)[1]));
+        } catch (Exception e) {
+            // TODO: What happens when the pop calls for the last break?
+            return Integer.valueOf(String_with_Values.substring(1));
+        }
+        
      }
 
 //Final form
@@ -186,6 +214,10 @@ class NewTypeString {
 
     public void delete(){
         this.str = str.substring(locationOf2ndSpace(this.str, New_Atempt.delimiter)[1]);
+    }
+
+    public void add(int valueToAdd){
+        this.str = "_"+valueToAdd+str;
     }
 
     static int findOccuranceOf(String stringWeSearchThrough, String charWeSearchFor){
