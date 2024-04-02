@@ -2,60 +2,60 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class New_Atempt {
-     static NewTypeString _CommandString = new NewTypeString("_20_8_2_10_5_15");
+     static NewTypeString _CommandString = new NewTypeString("_20_2_8_10");
+     static ArrayList<NewTypeString> _ArrayCommandString = new ArrayList<NewTypeString>();
      static String delimiter = "_";
      static ArrayList<Tuple> _tuppleList = new ArrayList<Tuple>();
-     static HashMap _Ordered_Commands = new HashMap<>();
+     static HashMap<String, Integer> _Ordered_Commands = new HashMap<>();
      //The ordering here is _length_br1_br2_...br_n
 
 
     public static void main(String[] args) {
         _tuppleList.add(new Tuple(1,20));
-        //printATupleList(_tuppleList);
-        System.out.println(_tuppleList.get(0).toString());
+       
+        //System.out.println(_tuppleList.get(0).toString());
+        permutateCommandString(_CommandString);
+        System.out.println("this is what is left: "+ _CommandString.str);
+        System.out.println(_ArrayCommandString.get(0).str);
         
-
-       // System.out.println(_CommandString.str);
-        //System.out.println(pop(_CommandString.str));
-        //delete(_CommandString);
-       // _CommandString.delete();
-       // System.out.println(_CommandString.str);
-       // System.out.println(pop(_CommandString.str));
-        //delete(_CommandString);
-        //_CommandString.delete();
-        //System.out.println(_CommandString.str);
-        nextBreak(_CommandString);
+        for(NewTypeString theString: _ArrayCommandString){
+            nextBreak(theString);
+        }
+        
+        System.out.println("Done Running NextBreak");
+//TODO: In order for the hashtable to actually speed up the program, it needs to store the length of the string and
+//end the distance of the break from the right side to the break. This way generalization can take effect in the code.         
+        System.out.println("There are "+ _Ordered_Commands.keySet().size() +", Key-Value pairs in this run through.");
+        for(String keys: _Ordered_Commands.keySet()){
+            
+            String key = keys;
+            int value = _Ordered_Commands.get(keys);
+            
+            System.out.println("Key: "+ key +"\tValue: "+ value);
+        }
     }
 
 
 
 
-
+//Final Form
      static int nextBreak(NewTypeString String_W_lengthOnFront){
-//TODO: We runn our base case check here. if no more breaks left in the command stringjust return the value.
-        
-        
-        
         int length = pop(String_W_lengthOnFront.str);
+
+//TODO: We runn our base case check here. if no more breaks left in the command stringjust return the value.        
+        if( findOccuranceOf(_CommandString.str, "_") < 3 ){
+            //System.out.println("The current value of this end node is: " +length);
+            _Ordered_Commands.put(String_W_lengthOnFront.str, length);
+            String_W_lengthOnFront.delete();
+            return length;
+        }
+    //Remove the first two elements in the Command String.
         String_W_lengthOnFront.delete();
         int breakValue = pop(String_W_lengthOnFront.str);
         String_W_lengthOnFront.delete();
 
-        if(String_W_lengthOnFront.str.length() < 2 ){
-            System.out.println("We hit this point!");
-            return 0;
-        }
 //TODO: This needs to remove tuple we are working on not the first tuple
-        for(int i = 0; i < _tuppleList.size(); i++){
-            if (_tuppleList.get(i)._Left_Value < breakValue && breakValue < _tuppleList.get(i)._Right_Value){
-                _tuppleList.add(new Tuple(_tuppleList.get(i)._Left_Value, breakValue));
-                _tuppleList.add(new Tuple(breakValue+1, _tuppleList.get(i)._Right_Value));
-                _tuppleList.remove(i);
-                
-            
-            }
-        }
-       
+       removeOldTuple(breakValue);
 
         
         
@@ -83,24 +83,32 @@ public class New_Atempt {
                     
                 }
             }
-            if (lengthOfTuple == -1){
-                System.out.println("error. Next command is too large for the original string.");
-
-            }
         System.out.println("This is the Command String we are about to run: "+ _CommandString.str);
-        nextBreak(String_W_lengthOnFront);
-
-
-        int Value_Of_This_CommandString = 0;
+    
+    //This is the recursive call here.
+        int Value_Of_This_CommandString = nextBreak(String_W_lengthOnFront)+length;
+        
+        
+        String_W_lengthOnFront.add(breakValue);
+        String_W_lengthOnFront.add(length);
+    //Here is where we assign to the hash map and begin to tally the total for each iteration of the code.
+        _Ordered_Commands.put(String_W_lengthOnFront.str, Value_Of_This_CommandString);
+       
+        //System.out.println(_Ordered_Commands.get(String_W_lengthOnFront.str));
+        String_W_lengthOnFront.delete();
+        //System.out.println(String_W_lengthOnFront.str);
+        //System.out.println("\nThis is the current value of the return: "+ Value_Of_This_CommandString);
+     
+        
         return Value_Of_This_CommandString;
-     }
+     }//End NextBreak()
 
+//Final Form
      static public void PrintAll(int length, int breakValue, NewTypeString leftoverString){
         System.out.println("The length of the current string is: "+ length);
         System.out.println("The next break is at: "+ breakValue);
         System.out.println("The rest of the command string is: "+ leftoverString.str);
      }
-
 
      static String findTuple(int Break_Value, ArrayList<Tuple> The_Tuples){
 
@@ -121,11 +129,75 @@ public class New_Atempt {
         
      }
 
-//Final Form
-     //static String delete(String StringWeDeleteFrom){
-      //  String StringWeReturn = StringWeDeleteFrom.substring(locationOf2ndSpace(StringWeDeleteFrom, delimiter)[1]);
-       // return StringWeReturn;
-     //}
+//WIP
+     static ArrayList<NewTypeString> permutateCommandString(NewTypeString thisCommandString){
+        ArrayList<NewTypeString> permutatedCommandString = new ArrayList<NewTypeString>();
+        //remove the length but save it for later.
+        int length = pop(thisCommandString.str);
+        thisCommandString.delete();
+
+    //create an arraylist to add in everysingle break we have. 
+        ArrayList<Integer> ourBreaks = new ArrayList<Integer>();
+        for(int i = 0; i < findOccuranceOf(thisCommandString.str, delimiter); i++ ){
+            ourBreaks.add(pop(thisCommandString.str));
+            thisCommandString.delete();
+        }
+        ourBreaks.add(pop(thisCommandString.str));
+        thisCommandString.delete();
+
+
+    //Testing if it will grab all the values
+        for(Integer value: ourBreaks){
+            System.out.println("Value is: "+ value);
+        }
+
+        permute(ourBreaks, 0, length);
+        
+        for(NewTypeString aString: _ArrayCommandString){
+            System.out.println(aString.str);
+        }
+        printArraylist(ourBreaks, 0);
+        //printArraylist(ourBreaks, 0);
+        
+
+        return permutatedCommandString;
+     }//End Permute
+
+     static void permute(java.util.List<Integer> arr, int k, int length){
+        
+        for(int i = k; i < arr.size(); i++){
+            java.util.Collections.swap(arr, i, k);
+            permute(arr, k+1, length);
+            java.util.Collections.swap(arr, k, i);
+        }
+        if (k == arr.size() -1){
+            System.out.println(java.util.Arrays.toString(arr.toArray()));
+            for(int i = 0; i < k; i++){
+                NewTypeString theString = new NewTypeString("");
+                //System.out.println("THIS");
+                //System.out.println(arr);
+                for(int x = 0; x < arr.size(); x++){
+                    theString.add(arr.get(x));
+                    //arr.get(x);
+                    
+                }
+                theString.add(length);
+                _ArrayCommandString.add(theString);
+                //_ArrayCommandString.add(arr); 
+            }
+            
+        }
+        
+    }//end Permute
+
+    static void printArraylist(java.util.List<Integer> arr, int k){
+        //for(int i = k;  i < arr.size(); i++){
+            
+                //System.out.println(java.util.Arrays.toString(arr.toArray()));
+            
+        //}
+    }
+     
 
 //Final Form
      static int pop(String String_with_Values){
@@ -166,7 +238,16 @@ public class New_Atempt {
         }
         return locationsofDelimiters;
     }// end LocationsOfSpaces
-
+//Final Form
+    static void removeOldTuple(int breakValue){
+        for(int i = 0; i < _tuppleList.size(); i++){
+            if (_tuppleList.get(i)._Left_Value < breakValue && breakValue < _tuppleList.get(i)._Right_Value){
+                _tuppleList.add(new Tuple(_tuppleList.get(i)._Left_Value, breakValue));
+                _tuppleList.add(new Tuple(breakValue+1, _tuppleList.get(i)._Right_Value));
+                _tuppleList.remove(i);
+            }
+        }
+    }
 }//End Class
 
 class Tuple {
@@ -213,7 +294,13 @@ class NewTypeString {
     }
 
     public void delete(){
-        this.str = str.substring(locationOf2ndSpace(this.str, New_Atempt.delimiter)[1]);
+        try {
+            this.str = str.substring(locationOf2ndSpace(this.str, New_Atempt.delimiter)[1]);
+        } catch (Exception e) {
+            //This is if we try to delete the last item in the String.
+            this.str = str.substring(str.length());
+        }
+        
     }
 
     public void add(int valueToAdd){
